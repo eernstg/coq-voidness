@@ -7,13 +7,8 @@ Require Import List.
 Require Import ClassTestTypes.
 Require Import VoidnessPreservation.
 
-(* Works with multiple parameters, with no changes: Uncomment one of them. *)
-Module MyVoidness :=
-  Voidness.NormalVoidness.
-  (* Voidness.PermissiveVoidness. *)
-
 Module MyVoidnessPreservation :=
-  VoidnessPreservation.VoidnessPreservationBase MyVoidness.
+  VoidnessPreservation.VoidnessPreservationBase Voidness.NormalVoidness.
 Import MyVoidnessPreservation.
 
 (* -------------------- Examples from email threads -------------------- *)
