@@ -1,3 +1,7 @@
+(* Copyright (c) 2017, the Dart project authors.  Please see the AUTHORS file
+ * for details. All rights reserved. Use of this source code is governed by a
+ * BSD-style license that can be found in the LICENSE file. *)
+
 Require Import Utf8.
 Require Import List.
 Require Import ClassTestTypes.
@@ -194,7 +198,7 @@ Goal ~(NotVoidAssignable dt_fun_dynamic_dynamic dt_fun_void_void).
     inversion H2; subst; unfold dt_fun_dynamic_dynamic in *. inversion H5.
   inversion H5.
     inversion H7. apply H12. reflexivity.
-  inversion H7. 
+  inversion H7.
 Qed.
 
 (* void Function(void) f = func<dynamic, void>; // Yes!! void-to-dynamic is OK! *)
@@ -324,7 +328,7 @@ Goal NotVoidAssignable dt_fun_void_void dt_fun_Object_Object.
     apply dsp_cons.
       apply ds_void.
     auto.
-  apply nva_base; discriminate. 
+  apply nva_base; discriminate.
 Qed.
 
 (* Object Function(Object) h = func<dynamic, void>; // No *)
@@ -401,4 +405,3 @@ Goal NotVoidAssignable dt_fun_Object_Object dt_fun_void_Object. (* TODO: differe
     auto.
   apply nvap_cons_first. apply nva_base; discriminate.
 Qed.
-

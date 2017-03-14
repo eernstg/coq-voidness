@@ -1,3 +1,7 @@
+(* Copyright (c) 2017, the Dart project authors.  Please see the AUTHORS file
+ * for details. All rights reserved. Use of this source code is governed by a
+ * BSD-style license that can be found in the LICENSE file. *)
+
 Require Import Utf8.
 Require Import Types.
 Require Import List.
@@ -46,7 +50,7 @@ with DartSubtypeClassType : ClassType -> ClassType -> Prop :=
   DartSubtypeClassType (name, args1) (name, args2).
 
 Hint Constructors
-  DartSubtype DartSubtypePairwise 
+  DartSubtype DartSubtypePairwise
   DartSubtypesClassTypes DartSubtypeClassTypes DartSubtypeClassType.
 
 Definition DartAssignable (dt1: DartType) (dt2: DartType) : Prop :=
