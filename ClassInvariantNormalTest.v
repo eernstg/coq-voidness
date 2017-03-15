@@ -25,104 +25,112 @@ Ltac unfold_parameters :=
 
 (* A<Object> x = new A<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_A_void dt_A_Object).
-  unfold not. intro H. inversion H. inversion H2. inversion H5.
-    inversion H8. apply H14. reflexivity.
-  inversion H8.
-    inversion H14. inversion H20.
-  inversion H13. inversion H17.
+  unfold not. intro H. inversion H. 
+  - inversion H0.
+  - inversion H0.
+  - inversion H2. inversion H5. 
+    + inversion H8. intuition H14.
+    + inversion H8. inversion H14. inversion H20. inversion H23.
+      inversion H23.
+      inversion H13. inversion H17.
+ - inversion H1.
 Qed.
 
 (* A<dynamic> x = new A<void>(); // Yes *)
 Goal TypeVoidnessPreserves dt_A_void dt_A_dynamic.
-  unfold TypeVoidnessPreserves. simpl.
   apply vp_class. apply vctsp_cons.
+  - apply vctp_some; apply vctps_first; auto.
+  - apply vctsp_cons. apply vctp_some. 
+    apply vctps_rest; apply vctps_first; auto.
     auto.
-  apply vctsp_cons.
-    apply vctp_some. apply vctps_rest. auto.
-  apply vctsp_nil.
 Qed.
 
 (* A<Object> x = new A<dynamic>(); // Yes *)
 Goal TypeVoidnessPreserves dt_A_dynamic dt_A_Object.
-  unfold TypeVoidnessPreserves. simpl. auto 7.
+  apply vp_class. apply vctsp_cons.
+  - apply vctp_some. apply vctps_first; auto.
+  - apply vctsp_cons; auto.
+    apply vctp_some. apply vctps_rest. apply vctps_first; auto.
 Qed.
 
-(* A<void> x = new A<dynamic>(); // voidV = dynamicV, Yes TODO*)
+(* A<void> x = new A<dynamic>(); // voidV = dynamicV, Yes *)
 Goal TypeVoidnessPreserves dt_A_dynamic dt_A_void.
-  (* We cannot prove this, because `dynamic` gets treated in the
-   * covariant or contravariant manner by `voidness`, and we need
-   * both. *)
-Admitted. (*Qed.*)
+  apply vp_class. apply vctsp_cons.
+  - apply vctp_some. apply vctps_first; auto.
+  - apply vctsp_cons; auto.
+    apply vctp_some. apply vctps_rest. apply vctps_first; auto.
+Qed.
 
 (* A<void> x = new A<Object>(); // voidV = objectV, No *)
 Goal ~(TypeVoidnessPreserves dt_A_Object dt_A_void).
-  intro H. inversion H. inversion H2. inversion H5.
-    inversion H8. intuition H14.
-  inversion H8.
-    inversion H16. inversion H20.
-  inversion H13. inversion H17.
+  intro H. inversion H. 
+  - inversion H0.
+  - inversion H0.
+  - inversion H2. inversion H5. 
+    + inversion H8. intuition H14.
+    + inversion H8. 
+      * inversion H16. inversion H20. inversion H23. inversion H23.
+      * inversion H13. inversion H17.
+  - inversion H1.
 Qed.
 
 (* dynamic x = new A<void>(); // Yes *)
 Goal TypeVoidnessPreserves dt_A_void dt_dynamic.
-  unfold TypeVoidnessPreserves. simpl. auto.
+  auto.
 Qed.
 
 (* Object x = new A<void>(); // Yes *)
 Goal TypeVoidnessPreserves dt_A_void dt_Object.
-  unfold TypeVoidnessPreserves. simpl.
   apply vp_class. apply vctsp_cons.
-    apply vctp_gone. apply vctg_cons.
-      discriminate.
-    apply vctg_nil.
-  apply vctsp_cons.
-    apply vctp_some. auto.
-  auto.
+  - apply vctp_gone. apply vctg_cons. discriminate. apply vctg_nil.
+  - apply vctsp_cons; auto.
+    apply vctp_some. apply vctps_first; auto.
 Qed.
 
 (* Iterable<void> x = new List<void>(); // Yes *)
 Goal TypeVoidnessPreserves dt_List_void dt_Iterable_void.
-  unfold TypeVoidnessPreserves. simpl.
   apply vp_class. apply vctsp_cons.
-    apply vctp_gone; apply vctg_cons.
-      discriminate.
-    apply vctg_cons.
-      discriminate.
+  - apply vctp_gone; apply vctg_cons. discriminate.
+    apply vctg_cons. discriminate.
     auto.
-  apply vctsp_cons.
-    apply vctp_some. apply vctps_first.
-      auto.
-    auto.
-  apply vctsp_cons.
-    apply vctp_some. apply vctps_rest. apply vctps_first.
-      auto.
-    auto.
-  auto.
+  - apply vctsp_cons.
+    + apply vctp_some. apply vctps_first. auto. auto.
+    + apply vctsp_cons; auto. apply vctp_some. apply vctps_rest. 
+      apply vctps_first; auto.
 Qed.
 
 (* List<void> x = new Iterable<void>(); // Yes *)
 Goal TypeVoidnessPreserves dt_Iterable_void dt_List_void.
-  unfold TypeVoidnessPreserves. simpl. auto 8.
+  apply vp_class. apply vctsp_cons.
+  - apply vctp_some. apply vctps_rest. apply vctps_first; auto.
+  - apply vctsp_cons; auto.
+    apply vctp_some. apply vctps_rest. apply vctps_rest.
+    apply vctps_first; auto.
 Qed.
 
 (* Iterable<Object> x = new List<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_List_void dt_Iterable_Object).
-  unfold TypeVoidnessPreserves.
-  simpl. unfold_parameters.
-  intro H. inversion H. inversion H2. inversion H7. inversion H10.
-    inversion H13. intuition H19.
-  inversion H13.
-    inversion H19. inversion H25.
-  inversion H18. inversion H22.
+  intro H. inversion H. 
+  - inversion H0.
+  - inversion H0.
+  - inversion H2. inversion H7. inversion H10.
+    + inversion H13. intuition H19.
+    + inversion H13. inversion H19. inversion H25. inversion H28.
+      inversion H28.
+      inversion H18. inversion H22.
+  - inversion H1.
 Qed.
 
 (* List<Object> x = new Iterable<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_Iterable_void dt_List_Object).
-  unfold TypeVoidnessPreserves.
-  simpl. unfold_parameters. intro H. inversion H.
-  inversion H2. inversion H5.
-    inversion H8. inversion H17. intuition H21.
-  inversion H8. inversion H13.
-    inversion H18. inversion H24.
-  inversion H17. inversion H21.
+  intro H. inversion H.
+  - inversion H0.
+  - inversion H0.
+  - inversion H2. inversion H5.
+    + inversion H8. inversion H17. intuition H21.
+    + inversion H8. inversion H13. inversion H18. inversion H24.
+      * inversion H27.
+      * inversion H27.
+      * inversion H17. inversion H21.
+  - inversion H1.
 Qed.
