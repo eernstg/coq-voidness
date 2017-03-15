@@ -17,9 +17,9 @@ Definition dt_fun_Object_void := dt_function dt_void (dt_Object :: nil).
 Definition dt_fun_void_Object := dt_function dt_Object (dt_void :: nil).
 
 Hint Unfold
-  cvt_Object vt_Object cvt_A_Object vt_A_Object cvt_A_1 vt_A_1
-  cvt_A_A_1 vt_A_A_1 vt_fun_Object_nil vt_fun_A1_AA1 cvt_B_A1_Object
-  vt_B_A1_Object cvt_B_ObjectObject vt_B_ObjectObject.
+  dt_fun_void_void dt_fun_void_dynamic dt_fun_dynamic_void
+  dt_fun_dynamic_dynamic dt_fun_Object_Object dt_fun_Object_void
+  dt_fun_void_Object.
 
 (* -------------------- Test cases from email -------------------- *)
 
@@ -195,29 +195,27 @@ Qed.
 (* void Function(void) f = func<dynamic, dynamic>; // Yes!! void-to-dynamic is OK! *)
 Goal ~(NotVoidAssignable dt_fun_dynamic_dynamic dt_fun_void_void).
   unfold not. intros. inversion H.
-    inversion H2; subst; unfold dt_fun_dynamic_dynamic in *. inversion H5.
+    inversion H2. inversion H5.
   inversion H5.
-    inversion H7. apply H12. reflexivity.
+    inversion H7. intuition H12.
   inversion H7.
 Qed.
 
 (* void Function(void) f = func<dynamic, void>; // Yes!! void-to-dynamic is OK! *)
 Goal ~(NotVoidAssignable dt_fun_dynamic_void dt_fun_void_void).
   unfold not. intros. inversion H.
-    inversion H2; subst; unfold dt_fun_dynamic_void in *.
-    inversion H5. apply H0; reflexivity.
+    inversion H2. inversion H5. intuition H0.
   inversion H5.
-    inversion H7. apply H12. reflexivity.
+    inversion H7. intuition H12.
   inversion H7.
 Qed.
 
 (* void Function(void) f = func<void, dynamic>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_void_dynamic dt_fun_void_void).
   unfold not. intros. inversion H.
-    inversion H2; subst; unfold dt_fun_void_dynamic in *.
-    inversion H5.
+    inversion H2. inversion H5.
   inversion H5.
-    inversion H7. apply H11. reflexivity.
+    inversion H7. intuition H11.
   inversion H7.
 Qed.
 
@@ -250,28 +248,29 @@ Qed.
 (* void Function(void) f = func<void, Object>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_void_Object dt_fun_void_void).
   unfold not. intros. inversion H.
-    inversion H2; subst; unfold dt_fun_void_Object in *.
-    inversion H5.
+    inversion H2. inversion H5.
   inversion H5.
-    inversion H7. apply H11. reflexivity.
+    inversion H7. intuition H11.
   inversion H7.
 Qed.
 
 (* dynamic Function(dynamic) g = func<void, void>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_void_void dt_fun_dynamic_dynamic).
   unfold not. intros. inversion H.
-    inversion H3; subst; unfold dt_fun_void_void in *.
-      inversion H5. apply H1. reflexivity.
-    inversion H5. apply H1. reflexivity.
-  inversion H5. inversion H7. inversion H7.
+    inversion H3.
+      inversion H5. intuition H1. 
+    inversion H5. intuition H1.
+  inversion H5.
+    inversion H7.
+  inversion H7.
 Qed.
 
 (* dynamic Function(dynamic) g = func<dynamic, void>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_dynamic_void dt_fun_dynamic_dynamic).
   unfold not. intros. inversion H.
-    inversion H3; subst; unfold dt_fun_dynamic_void in *.
-      inversion H5. apply H1. reflexivity.
-    inversion H5. apply H1. reflexivity.
+    inversion H3.
+      inversion H5. intuition H1.
+    inversion H5. intuition H1.
   inversion H5.
     inversion H7.
   inversion H7.
@@ -280,7 +279,7 @@ Qed.
 (* dynamic Function(dynamic) g = func<void, dynamic>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_void_dynamic dt_fun_dynamic_dynamic).
   unfold not. intros. inversion H.
-    inversion H3; subst; unfold dt_fun_void_dynamic in *.
+    inversion H3.
       inversion H5.
     inversion H5.
   inversion H5.
@@ -291,7 +290,7 @@ Qed.
 (* dynamic Function(dynamic) g = func<Object, Object>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_Object_Object dt_fun_dynamic_dynamic).
   unfold not. intros. inversion H.
-    inversion H3; subst; unfold dt_fun_Object_Object in *.
+    inversion H3.
       inversion H5.
     inversion H5.
   inversion H5.
@@ -301,18 +300,22 @@ Qed.
 (* dynamic Function(dynamic) g = func<Object, void>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_Object_void dt_fun_dynamic_dynamic).
   unfold not. intros. inversion H.
-    inversion H3; subst; unfold dt_fun_Object_void in *.
-      inversion H5. apply H1. reflexivity.
-    inversion H5. apply H1. reflexivity.
+    inversion H3.
+      inversion H5. intuition H8.
+    inversion H5. intuition H8.
+  inversion H3.
+    inversion H5.
+      inversion H8.
+    inversion H8.
   inversion H5.
-    inversion H7.
-  inversion H7.
+    inversion H8.
+  inversion H8.
 Qed.
 
 (* dynamic Function(dynamic) g = func<void, Object>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_void_Object dt_fun_dynamic_dynamic).
   unfold not. intros. inversion H.
-    inversion H3; subst; unfold dt_fun_void_Object in *.
+    inversion H3.
       inversion H5.
     inversion H5.
   inversion H5.
@@ -345,7 +348,7 @@ Qed.
 (* Object Function(Object) h = func<void, dynamic>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_void_dynamic dt_fun_Object_Object).
   unfold not. intros. inversion H.
-    inversion H3; subst; unfold dt_fun_void_dynamic in *.
+    inversion H3.
       inversion H5.
     inversion H5.
   inversion H5.
@@ -356,15 +359,15 @@ Qed.
 (* Object Function(Object) h = func<Object, Object>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_Object_Object dt_fun_Object_Object).
   unfold not. intros. inversion H.
-    inversion H3; subst; unfold dt_fun_Object_Object in *.
-      inversion H5. inversion H2.
-        inversion H12.
-      inversion H12; subst.
-    inversion H5. inversion H2.
-      inversion H12.
-    inversion H12.
-  inversion H5.
-    inversion H7. inversion H13.
+    inversion H3.
+      inversion H5. inversion H9.
+        inversion H16.
+      inversion H16.
+    inversion H5. inversion H9.
+      inversion H16.
+    inversion H16.
+  inversion H5. inversion H7.
+    inversion H13.
       inversion H20.
     inversion H20.
   inversion H7.
@@ -384,13 +387,13 @@ Qed.
 (* Object Function(Object) h = func<void, Object>; // Yes *)
 Goal ~(NotVoidAssignable dt_fun_void_Object dt_fun_Object_Object).
   unfold not. intros. inversion H.
-    inversion H3; subst; unfold dt_fun_void_Object in *.
-      inversion H5. inversion H2.
-        inversion H12.
-      inversion H12.
-    inversion H5. inversion H2.
-      inversion H12.
-    inversion H12.
+    inversion H3.
+      inversion H5. inversion H9.
+        inversion H16.
+      inversion H16.
+    inversion H5. inversion H9.
+      inversion H16.
+    inversion H16.
   inversion H5.
     inversion H7.
   inversion H7.
