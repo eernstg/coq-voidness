@@ -13,7 +13,8 @@ Inductive DartType : Set :=
 | dt_dynamic : DartType
 | dt_class : list (Name * list DartType) -> DartType (* Incl. all supertypes *)
 | dt_function : DartType -> list DartType -> DartType
-| dt_variable : Name -> DartType. (* Type parameter with no bound *)
+| dt_variable : Name -> DartType (* Type parameter with no bound *)
+| dt_bottom : DartType.
 
 Definition ClassType : Type := (Name * (list DartType))%type.
 Definition ClassTypes : Type := list ClassType.
@@ -22,7 +23,8 @@ Inductive VoidnessType : Set :=
 | vt_0 : VoidnessType
 | vt_1 : VoidnessType
 | vt_class : list (Name * list VoidnessType) -> VoidnessType
-| vt_function : VoidnessType -> list VoidnessType -> VoidnessType.
+| vt_function : VoidnessType -> list VoidnessType -> VoidnessType
+| vt_bottom : VoidnessType.
 
 Definition VoidnessClassType : Type := (Name * list VoidnessType)%type.
 Definition VoidnessClassTypes : Type := list VoidnessClassType.
