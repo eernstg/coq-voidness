@@ -11,9 +11,11 @@ Module Type VoidnessParametersSig.
   Parameter voidness_void : VoidnessType.
   Parameter voidness_dynamic : VoidnessType.
   Parameter voidness_variable : VoidnessType.
+  Parameter voidness_bottom : VoidnessType.
   Parameter covoidness_void : VoidnessType.
   Parameter covoidness_dynamic : VoidnessType.
   Parameter covoidness_variable : VoidnessType.
+  Parameter covoidness_bottom : VoidnessType.
 End VoidnessParametersSig.
 
 Module Type VoidnessSig.
@@ -37,6 +39,7 @@ Module VoidnessBase (Parameters : VoidnessParametersSig) <: VoidnessSig.
                 end) ctypes)
     | dt_function ret args => vt_function (voidness ret) (map covoidness args)
     | dt_variable name => voidness_variable
+    | dt_bottom => voidness_bottom
     end
 
   with covoidness (dt : DartType) : VoidnessType :=
@@ -51,6 +54,7 @@ Module VoidnessBase (Parameters : VoidnessParametersSig) <: VoidnessSig.
                 end) ctypes)
     | dt_function ret args => vt_function (covoidness ret) (map voidness args)
     | dt_variable name => covoidness_variable
+    | dt_bottom => covoidness_bottom
     end.
 
   Definition annotationVoidness := covoidness.
@@ -62,9 +66,11 @@ Module StrictVoidnessParameters <: VoidnessParametersSig.
   Definition voidness_void := vt_1.
   Definition voidness_dynamic := vt_0.
   Definition voidness_variable := vt_1.
+  Definition voidness_bottom := vt_0.
   Definition covoidness_void := vt_1.
   Definition covoidness_dynamic := vt_0. (* `dynamic` always non-voidy *)
   Definition covoidness_variable := vt_1.
+  Definition covoidness_bottom := vt_0.
 End StrictVoidnessParameters.
 
 (* Traditional co/contravariance, permissive dynamic *)
@@ -72,9 +78,11 @@ Module NormalVoidnessParameters <: VoidnessParametersSig.
   Definition voidness_void := vt_1.
   Definition voidness_dynamic := vt_0.
   Definition voidness_variable := vt_1.
+  Definition voidness_bottom := vt_0.
   Definition covoidness_void := vt_1.
   Definition covoidness_dynamic := vt_1. (* `dynamic` voidy when contravariant *)
   Definition covoidness_variable := vt_1.
+  Definition covoidness_bottom := vt_0.
 End NormalVoidnessParameters.
 
 Module StrictVoidness := VoidnessBase StrictVoidnessParameters.

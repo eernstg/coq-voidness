@@ -89,9 +89,11 @@ Module NormalVoidnessPreservation := VoidnessPreservationBase Voidness.NormalVoi
 Module Type CheckSig (MyVoidness : VoidnessSig).
 
   Parameter voidness0IsDynamic :
-    forall dt, MyVoidness.voidness dt = vt_0 -> dt = dt_dynamic.
+    forall dt, MyVoidness.voidness dt = vt_0 ->
+               (dt = dt_dynamic \/ dt = dt_bottom).
   Parameter annotationVoidness0IsDynamic :
-    forall dt, MyVoidness.annotationVoidness dt = vt_0 -> dt = dt_dynamic.
+    forall dt, MyVoidness.annotationVoidness dt = vt_0 ->
+               (dt = dt_dynamic \/ dt = dt_bottom).
   Parameter annotationVoidness1IsVoidOrVar :
     forall dt, MyVoidness.annotationVoidness dt = vt_1 ->
                (dt = dt_dynamic \/ dt = dt_void \/ exists n, dt = dt_variable n).
@@ -103,13 +105,13 @@ Module CheckStrict <: CheckSig StrictVoidness.
   Import StrictVoidness.
 
   Lemma voidness0IsDynamic :
-    forall dt, voidness dt = vt_0 -> dt = dt_dynamic.
+    forall dt, voidness dt = vt_0 -> (dt = dt_dynamic \/ dt = dt_bottom).
   Proof.
     intro dt; destruct dt; intro H; auto; inversion H.
   Qed.
 
   Lemma annotationVoidness0IsDynamic :
-    forall dt, annotationVoidness dt = vt_0 -> dt = dt_dynamic.
+    forall dt, annotationVoidness dt = vt_0 -> (dt = dt_dynamic \/ dt = dt_bottom).
   Proof.
     intro dt; destruct dt; intro H; auto; inversion H.
   Qed.
@@ -143,13 +145,13 @@ Module CheckNormal : CheckSig NormalVoidness.
   Import NormalVoidness.
 
   Lemma voidness0IsDynamic :
-    forall dt, voidness dt = vt_0 -> dt = dt_dynamic.
+    forall dt, voidness dt = vt_0 -> (dt = dt_dynamic \/ dt = dt_bottom).
   Proof.
     intro dt; destruct dt; intro H; auto; inversion H.
   Qed.
 
   Lemma annotationVoidness0IsDynamic :
-    forall dt, annotationVoidness dt = vt_0 -> dt = dt_dynamic.
+    forall dt, annotationVoidness dt = vt_0 -> (dt = dt_dynamic \/ dt = dt_bottom).
   Proof.
     intro dt; destruct dt; intro H; auto; inversion H.
   Qed.
