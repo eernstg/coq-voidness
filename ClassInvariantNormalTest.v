@@ -13,44 +13,32 @@ Module MyVoidnessPreservation :=
     Voidness.NormalVoidness.
 Import MyVoidnessPreservation.
 
-Ltac unfold_parameters :=
-  unfold NormalVoidnessParameters.voidness_void in *;
-  unfold NormalVoidnessParameters.voidness_dynamic in *;
-  unfold NormalVoidnessParameters.voidness_variable in *;
-  unfold NormalVoidnessParameters.covoidness_void in *;
-  unfold NormalVoidnessParameters.covoidness_dynamic in *;
-  unfold NormalVoidnessParameters.covoidness_variable in *.
-
 (* -------------------- Examples from email threads -------------------- *)
 
 (* A<Object> x = new A<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_A_void dt_A_Object).
   unfold not. intro H. inversion H. 
   - inversion H0.
-  - inversion H0.
   - inversion H2. inversion H5. 
     + inversion H8. intuition H14.
     + inversion H8. inversion H14. inversion H20. inversion H23.
-      inversion H23.
       inversion H13. inversion H17.
- - inversion H1.
 Qed.
 
 (* A<dynamic> x = new A<void>(); // Yes *)
 Goal TypeVoidnessPreserves dt_A_void dt_A_dynamic.
   apply vp_class. apply vctsp_cons.
   - apply vctp_some; apply vctps_first; auto.
-  - apply vctsp_cons. apply vctp_some. 
-    apply vctps_rest; apply vctps_first; auto.
-    auto.
+  - apply vctsp_cons; auto.
+    apply vctp_some; apply vctps_rest; apply vctps_first; auto.
 Qed.
 
 (* A<Object> x = new A<dynamic>(); // Yes *)
 Goal TypeVoidnessPreserves dt_A_dynamic dt_A_Object.
   apply vp_class. apply vctsp_cons.
-  - apply vctp_some. apply vctps_first; auto.
+  - apply vctp_some; apply vctps_first; auto.
   - apply vctsp_cons; auto.
-    apply vctp_some. apply vctps_rest. apply vctps_first; auto.
+    apply vctp_some. apply vctps_rest. apply vctps_first; auto. 
 Qed.
 
 (* A<void> x = new A<dynamic>(); // voidV = dynamicV, Yes *)
@@ -65,13 +53,11 @@ Qed.
 Goal ~(TypeVoidnessPreserves dt_A_Object dt_A_void).
   intro H. inversion H. 
   - inversion H0.
-  - inversion H0.
   - inversion H2. inversion H5. 
     + inversion H8. intuition H14.
     + inversion H8. 
-      * inversion H16. inversion H20. inversion H23. inversion H23.
+      * inversion H16. inversion H20. inversion H23.
       * inversion H13. inversion H17.
-  - inversion H1.
 Qed.
 
 (* dynamic x = new A<void>(); // Yes *)
@@ -112,25 +98,19 @@ Qed.
 Goal ~(TypeVoidnessPreserves dt_List_void dt_Iterable_Object).
   intro H. inversion H. 
   - inversion H0.
-  - inversion H0.
   - inversion H2. inversion H7. inversion H10.
     + inversion H13. intuition H19.
     + inversion H13. inversion H19. inversion H25. inversion H28.
-      inversion H28.
       inversion H18. inversion H22.
-  - inversion H1.
 Qed.
 
 (* List<Object> x = new Iterable<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_Iterable_void dt_List_Object).
   intro H. inversion H.
   - inversion H0.
-  - inversion H0.
   - inversion H2. inversion H5.
     + inversion H8. inversion H17. intuition H21.
-    + inversion H8. inversion H13. inversion H18. inversion H24.
-      * inversion H27.
-      * inversion H27.
+    + inversion H8. inversion H13.
+      * inversion H18. inversion H24. inversion H27.
       * inversion H17. inversion H21.
-  - inversion H1.
 Qed.

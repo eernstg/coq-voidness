@@ -13,7 +13,7 @@ Module VoidnessPreservationBase (Import MyVoidness : VoidnessSig).
 
   Inductive VoidnessPreserves : DartType -> DartType -> Prop :=
   | vp_0_any : ∀ dt,
-    VoidnessPreserves dt dt_dynamic
+    VoidnessPreserves dt_dynamic dt
   | vp_any_1 : ∀ dt1 dt2,
     annotationVoidness dt2 = vt_1 ->
     VoidnessPreserves dt1 dt2
