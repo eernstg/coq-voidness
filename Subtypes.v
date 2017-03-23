@@ -20,6 +20,7 @@ Inductive DartSubtype : DartType -> DartType -> Prop :=
   DartSubtype (dt_function ret1 args1) (dt_function ret2 args2)
 | ds_variable : ∀ name,
   DartSubtype (dt_variable name) (dt_variable name)
+| ds_bottom_any : ∀ dt, DartSubtype dt_bottom dt
 
 with DartSubtypePairwise : list DartType -> list DartType -> Prop :=
 | dsp_nil : DartSubtypePairwise nil nil
