@@ -11,9 +11,9 @@ Inductive Name : Set := Object | A | B | N | C1 | T | Iterable | List.
 Inductive DartType : Set :=
 | dt_void : DartType
 | dt_dynamic : DartType
-| dt_class : list (Name * list DartType) -> DartType (* Incl. all supertypes *)
+| dt_class : list (Name * list DartType) -> DartType (* Incl. all clausal supertypes *)
 | dt_function : DartType -> list DartType -> DartType
-| dt_variable : Name -> DartType (* Type parameter with no bound *)
+| dt_variable : Name -> DartType (* Type parameter with no bound: can be void *)
 | dt_bottom : DartType.
 
 Definition ClassType : Type := (Name * (list DartType))%type.
