@@ -6,7 +6,6 @@ Require Import Utf8.
 Require Import List.
 Require Import Types.
 Require Import Dynamics.
-Require Import Voidness.
 
 Require Export Types.
 Require Export Dynamics.
