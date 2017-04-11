@@ -12,7 +12,7 @@ Require Import NotVoidAssignability.
 (* A<Object> x = new A<void>(); // No *)
 Goal NotVoidAssignable dt_A_void dt_A_Object.
   apply nva_class. unfold ct_A_void.
-  apply nvact_upcast with (args1 := dt_void :: nil).
+  apply nvact_upcast with (args1 := dts_cons dt_void dts_nil).
       apply dsscts_cons.
         apply dscts_first. apply dsct_args. apply dsp_cons.
           apply ds_Object.
@@ -28,7 +28,7 @@ Qed.
 Goal ~(NotVoidAssignable dt_A_void dt_A_dynamic).
   unfold not. intros. inversion H. inversion H2.
     subst. unfold ct_A_void in *.
-    assert (args1 = dt_void :: nil).
+    assert (args1 = dts_cons dt_void dts_nil).
       inversion H8.
         reflexivity.
       contradiction H6. reflexivity.
@@ -36,7 +36,7 @@ Goal ~(NotVoidAssignable dt_A_void dt_A_dynamic).
       inversion H1. contradiction H10. reflexivity.
     inversion H1.
   unfold ct_A_dynamic in *.
-  assert (args2 = dt_dynamic :: nil).
+  assert (args2 = dts_cons dt_dynamic dts_nil).
     inversion H8.
       reflexivity.
     contradiction H15. reflexivity.
@@ -49,14 +49,14 @@ Qed.
 Goal ~(NotVoidAssignable dt_A_void dt_A_dynamic).
   unfold not. intros. inversion H. inversion H2; subst.
     unfold ct_A_void in *.
-    assert (args1 = dt_void :: nil).
+    assert (args1 = dts_cons dt_void dts_nil).
       inversion H8.
         reflexivity.
       contradiction H6. reflexivity.
     subst args1. inversion H9.
       inversion H1. apply H10. reflexivity.
     inversion H1.
-  assert (args2 = dt_dynamic :: nil).
+  assert (args2 = dts_cons dt_dynamic dts_nil).
     inversion H8.
       reflexivity.
     contradiction H7. reflexivity.
@@ -69,14 +69,14 @@ Qed.
 (* A<void> x = new A<dynamic>(); // voidV = dynamicV, yes *)
 Goal ~(NotVoidAssignable dt_A_dynamic dt_A_void).
   unfold not. intros. inversion H. inversion H2; subst; unfold ct_A_dynamic in *.
-    assert (args1 = dt_dynamic :: nil).
+    assert (args1 = dts_cons dt_dynamic dts_nil).
       inversion H8.
         reflexivity.
       contradiction H6. reflexivity.
     subst args1. inversion H9.
       inversion H1.
     inversion H1.
-  assert (args2 = dt_void :: nil).
+  assert (args2 = dts_cons dt_void dts_nil).
     inversion H8.
       reflexivity.
     contradiction H7. reflexivity.
@@ -88,14 +88,14 @@ Qed.
 (* A<void> x = new A<Object>(); // voidV = objectV, Yes *)
 Goal ~(NotVoidAssignable dt_A_Object dt_A_void).
   unfold not. intros. inversion H. inversion H2; subst; unfold ct_A_Object in *.
-    assert (args1 = dt_Object :: nil).
+    assert (args1 = dts_cons dt_Object dts_nil).
       inversion H8.
         reflexivity.
       contradiction H6. reflexivity.
     subst args1. inversion H9.
       inversion H1.
     inversion H1.
-  assert (args2 = dt_void :: nil).
+  assert (args2 = dts_cons dt_void dts_nil).
     inversion H8.
       reflexivity.
     contradiction H7. reflexivity.
@@ -112,7 +112,7 @@ Qed.
 (* Object x = new A<void>(); // Yes *)
 Goal ~(NotVoidAssignable dt_A_void dt_Object).
   unfold not. intros. inversion H. inversion H2; subst; unfold ct_A_void in *.
-    assert (args1 = nil).
+    assert (args1 = dts_nil).
       inversion H9.
     subst args1. inversion H9.
   inversion H8. inversion H10.
@@ -121,7 +121,7 @@ Qed.
 (* Iterable<void> x = new List<void>(); // Yes *)
 Goal ~(NotVoidAssignable dt_List_void dt_Iterable_void).
   unfold not. intros. inversion H. inversion H2; subst; unfold ct_List_void in *.
-    assert (args1 = dt_void :: nil).
+    assert (args1 = dts_cons dt_void dts_nil).
       inversion H8. inversion H10.
         reflexivity.
       inversion H17. inversion H24.
@@ -135,7 +135,7 @@ Qed.
 Goal ~(NotVoidAssignable dt_Iterable_void dt_List_void).
   unfold not. intros. inversion H. inversion H2; subst; unfold ct_Iterable_void in *.
     inversion H8. inversion H10. inversion H17.
-  assert (args2 = dt_void :: nil).
+  assert (args2 = dts_cons dt_void dts_nil).
     inversion H8. inversion H10.
       reflexivity.
     contradiction H16. reflexivity.
@@ -146,7 +146,7 @@ Qed.
 
 (* Iterable<Object> x = new List<void>(); // No *)
 Goal NotVoidAssignable dt_List_void dt_Iterable_Object.
-  apply nva_class. apply nvact_upcast with (args1 := dt_void :: nil).
+  apply nva_class. apply nvact_upcast with (args1 := dts_cons dt_void dts_nil).
       apply dsscts_cons.
         apply dscts_rest. apply dscts_first. apply dsct_args. apply dsp_cons.
           auto.
@@ -164,7 +164,7 @@ Qed.
 
 (* List<Object> x = new Iterable<void>(); // No *)
 Goal NotVoidAssignable dt_Iterable_void dt_List_Object.
-  apply nva_class. apply nvact_downcast with (args2 := dt_Object :: nil).
+  apply nva_class. apply nvact_downcast with (args2 := dts_cons dt_Object dts_nil).
       apply dsscts_cons.
         apply dscts_rest. apply dscts_first. apply dsct_args. auto.
       apply dsscts_cons.

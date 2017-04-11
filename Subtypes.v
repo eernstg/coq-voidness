@@ -10,7 +10,7 @@ Require Export Types.
 Inductive DartSubtype : DartType -> DartType -> Prop :=
 | ds_void : ∀ dt, DartSubtype dt dt_void
 | ds_dynamic : ∀ dt, DartSubtype dt dt_dynamic
-| ds_Object : ∀ dt, DartSubtype dt (dt_class ((Object, nil) :: nil))
+| ds_Object : ∀ dt, DartSubtype dt (dt_class (ndts_cons (Object, dts_nil) ndts_nil))
 | ds_class : ∀ ctypes1 ctypes2,
   DartSubtypesClassTypes ctypes1 ctypes2 ->
   DartSubtype (dt_class ctypes1) (dt_class ctypes2)
@@ -22,30 +22,30 @@ Inductive DartSubtype : DartType -> DartType -> Prop :=
   DartSubtype (dt_variable name) (dt_variable name)
 | ds_bottom_any : ∀ dt, DartSubtype dt_bottom dt
 
-with DartSubtypePairwise : list DartType -> list DartType -> Prop :=
-| dsp_nil : DartSubtypePairwise nil nil
+with DartSubtypePairwise : DartTypes -> DartTypes -> Prop :=
+| dsp_nil : DartSubtypePairwise dts_nil dts_nil
 | dsp_cons : ∀ dt1 dts1 dt2 dts2,
   DartSubtype dt1 dt2 ->
   DartSubtypePairwise dts1 dts2 ->
-  DartSubtypePairwise (dt1 :: dts1) (dt2 :: dts2)
+  DartSubtypePairwise (dts_cons dt1 dts1) (dts_cons dt2 dts2)
 
-with DartSubtypesClassTypes : ClassTypes -> ClassTypes -> Prop :=
+with DartSubtypesClassTypes : NameDartTypes -> NameDartTypes -> Prop :=
 | dsscts_nil : ∀ ctypes,
-  DartSubtypesClassTypes ctypes nil
+  DartSubtypesClassTypes ctypes ndts_nil
 | dsscts_cons : ∀ ctypes1 ctype2 ctypes2,
   DartSubtypeClassTypes ctypes1 ctype2 ->
   DartSubtypesClassTypes ctypes1 ctypes2 ->
-  DartSubtypesClassTypes ctypes1 (ctype2 :: ctypes2)
+  DartSubtypesClassTypes ctypes1 (ndts_cons ctype2 ctypes2)
 
-with DartSubtypeClassTypes : ClassTypes -> ClassType -> Prop :=
+with DartSubtypeClassTypes : NameDartTypes -> (Name * DartTypes) -> Prop :=
 | dscts_first : ∀ ctype1 ctypes1 ctype2,
   DartSubtypeClassType ctype1 ctype2 ->
-  DartSubtypeClassTypes (ctype1 :: ctypes1) ctype2
+  DartSubtypeClassTypes (ndts_cons ctype1 ctypes1) ctype2
 | dscts_rest : ∀ ctype1 ctypes1 ctype2,
   DartSubtypeClassTypes ctypes1 ctype2 ->
-  DartSubtypeClassTypes (ctype1 :: ctypes1) ctype2
+  DartSubtypeClassTypes (ndts_cons ctype1 ctypes1) ctype2
 
-with DartSubtypeClassType : ClassType -> ClassType -> Prop :=
+with DartSubtypeClassType : (Name * DartTypes) -> (Name * DartTypes) -> Prop :=
 | dsct_args: ∀ name args1 args2,
   DartSubtypePairwise args1 args2 ->
   DartSubtypeClassType (name, args1) (name, args2).

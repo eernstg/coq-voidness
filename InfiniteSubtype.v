@@ -4,7 +4,6 @@
 
 Require Import Utf8.
 Require Import Coq.Program.Basics.
-Require Import List.
 Require Import Types.
 Require Import Subtypes.
 Require Import ClassTestTypes.
@@ -13,7 +12,7 @@ Require Import ClassTestTypes.
 Fixpoint nestedType (n : nat) : DartType :=
   match n with
     | O => dt_bottom
-    | S n => dt_class ((A, nestedType(n) :: nil) :: ct_Object)
+    | S n => dt_class (ndts_cons (A, dts_cons (nestedType n) dts_nil) ct_Object)
   end.
 
 Lemma DartTypeHasInfiniteChain : ∀ n,

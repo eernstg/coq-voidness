@@ -34,22 +34,22 @@ Module VoidnessPreservationBase (MyDynamics : DynamicsSig).
   | vp_function_dynamic : ∀ ret args,
     VoidnessPreserves (dt_function ret args) dt_dynamic
 
-  with VoidnessPreservesPairwise : list DartType -> list DartType -> Prop :=
-  | vpp_nil : VoidnessPreservesPairwise nil nil
+  with VoidnessPreservesPairwise : DartTypes -> DartTypes -> Prop :=
+  | vpp_nil : VoidnessPreservesPairwise dts_nil dts_nil
   | vpp_cons : ∀ dt1 dt2 dts1 dts2,
     VoidnessPreserves dt1 dt2 ->
     VoidnessPreservesPairwise dts1 dts2 ->
-    VoidnessPreservesPairwise (dt1 :: dts1) (dt2 :: dts2)
+    VoidnessPreservesPairwise (dts_cons dt1 dts1) (dts_cons dt2 dts2)
 
-  with VoidnessClassTypesPreserve : ClassTypes -> ClassTypes -> Prop :=
+  with VoidnessClassTypesPreserve : NameDartTypes -> NameDartTypes -> Prop :=
   | vctsp_nil : ∀ ctypes,
-    VoidnessClassTypesPreserve nil ctypes
+    VoidnessClassTypesPreserve ndts_nil ctypes
   | vctsp_cons : ∀ ctype1 ctypes1 ctypes2,
     VoidnessClassTypePreserves ctype1 ctypes2 ->
     VoidnessClassTypesPreserve ctypes1 ctypes2 ->
-    VoidnessClassTypesPreserve (ctype1 :: ctypes1) ctypes2
+    VoidnessClassTypesPreserve (ndts_cons ctype1 ctypes1) ctypes2
 
-  with VoidnessClassTypePreserves : ClassType -> ClassTypes -> Prop :=
+  with VoidnessClassTypePreserves : (Name * DartTypes) -> NameDartTypes -> Prop :=
   | vctp_gone : ∀ ctype ctypes,
     VoidnessClassTypeGone ctype ctypes ->
     VoidnessClassTypePreserves ctype ctypes
@@ -57,22 +57,22 @@ Module VoidnessPreservationBase (MyDynamics : DynamicsSig).
     VoidnessClassTypePreservesSome ctype ctypes ->
     VoidnessClassTypePreserves ctype ctypes
 
-  with VoidnessClassTypeGone : ClassType -> ClassTypes -> Prop :=
+  with VoidnessClassTypeGone : (Name * DartTypes) -> NameDartTypes -> Prop :=
   | vctg_nil : ∀ ctype,
-    VoidnessClassTypeGone ctype nil
+    VoidnessClassTypeGone ctype ndts_nil
   | vctg_cons : ∀ name1 args1 name2 args2 ctypes,
     name1 <> name2 ->
     VoidnessClassTypeGone (name1, args1) ctypes ->
-    VoidnessClassTypeGone (name1, args1) ((name2, args2) :: ctypes)
+    VoidnessClassTypeGone (name1, args1) (ndts_cons (name2, args2) ctypes)
 
-  with VoidnessClassTypePreservesSome : ClassType -> ClassTypes -> Prop :=
+  with VoidnessClassTypePreservesSome : (Name * DartTypes) -> NameDartTypes -> Prop :=
   | vctps_first : ∀ name args1 args2 ctypes,
     VoidnessPreservesPairwise args1 args2 ->
     VoidnessPreservesPairwise args2 args1 ->
-    VoidnessClassTypePreservesSome (name, args1) ((name, args2) :: ctypes)
+    VoidnessClassTypePreservesSome (name, args1) (ndts_cons (name, args2) ctypes)
   | vctps_rest : ∀ ctype1 ctype2 ctypes2,
     VoidnessClassTypePreservesSome ctype1 ctypes2 ->
-    VoidnessClassTypePreservesSome ctype1 (ctype2 :: ctypes2).
+    VoidnessClassTypePreservesSome ctype1 (ndts_cons ctype2 ctypes2).
 
   Hint Constructors
     VoidnessPreserves VoidnessPreservesPairwise

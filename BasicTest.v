@@ -18,15 +18,18 @@ Import MyVoidnessPreservation.
 (* ---------- Voidness Types ---------- *)
 
 (* B<A<1>, Object> *)
-Definition ct_B_A1_Object := (B, dt_A_void :: dt_Object :: nil) :: ct_Object.
+Definition ct_B_A1_Object :=
+  ndts_cons (B, dts_cons dt_A_void (dts_cons dt_Object dts_nil)) ct_Object.
 Definition dt_B_A1_Object := dt_class ct_B_A1_Object.
 
 (* B<Object, Object> *)
-Definition ct_B_ObjectObject := (B, dt_Object :: dt_Object :: nil) :: ct_Object.
+Definition ct_B_ObjectObject :=
+  ndts_cons (B, dts_cons dt_Object (dts_cons dt_Object dts_nil)) ct_Object.
 Definition dt_B_ObjectObject := dt_class ct_B_ObjectObject.
 
 (* A<A<void>> *)
-Definition ct_A_A_void := (A, dt_A_void :: nil) :: ct_Object.
+Definition ct_A_A_void := 
+  ndts_cons (A, dts_cons dt_A_void dts_nil) ct_Object.
 Definition dt_A_A_void := dt_class ct_A_A_void.
 
 Hint Unfold
