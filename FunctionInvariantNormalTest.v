@@ -9,7 +9,7 @@ Require Import InvariantVoidnessPreservation.
 Require Import FunctionTestTypes.
 
 Module MyVoidnessPreservation :=
-  InvariantVoidnessPreservation.VoidnessPreservationBase Voidness.NormalVoidness.
+  InvariantVoidnessPreservation.VoidnessPreservationBase Dynamics.NormalDynamics.
 Import MyVoidnessPreservation.
 
 (* void Function(void) f = func<dynamic, dynamic>; // Yes *)
@@ -29,16 +29,12 @@ Qed.
 
 (* void Function(void) f = func<Object, Object>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun_Object_Object dt_fun_void_void).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H5. inversion H9. inversion H12.
+  intro H. inversion H. inversion H5. inversion H9.
 Qed.
 
 (* void Function(void) f = func<Object, void>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun_Object_void dt_fun_void_void).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H5. inversion H9. inversion H12.
+  intro H. inversion H. inversion H5. inversion H9.
 Qed.
 
 (* void Function(void) f = func<void, Object>; // Yes *)
@@ -78,16 +74,12 @@ Qed.
 
 (* Object Function(Object) h = func<void, void>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun_void_void dt_fun_Object_Object).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H3. inversion H6.
+  intro H. inversion H. inversion H3.
 Qed.
 
 (* Object Function(Object) h = func<dynamic, void>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun_dynamic_void dt_fun_Object_Object).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H3. inversion H6.
+  intro H. inversion H. inversion H3.
 Qed.
 
 (* Object Function(Object) h = func<void, dynamic>; // Yes *)
@@ -106,9 +98,7 @@ Qed.
 
 (* Object Function(Object) h = func<Object, void>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun_Object_void dt_fun_Object_Object).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H3. inversion H6.
+  intro H. inversion H. inversion H3.
 Qed.
 
 (* Object Function(Object) h = func<void, Object>; // Yes *)
@@ -120,9 +110,7 @@ Qed.
 
 (* Object Function(void) h = func<Object, Object>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun_Object_Object dt_fun_void_Object).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H5. inversion H9. inversion H12.
+  intro H. inversion H. inversion H5. inversion H9.
 Qed.
 
 (* dynamic Function(void Function(void)) f = func<dynamic Function(dynamic), dynamic>; // Yes *)
@@ -134,10 +122,8 @@ Qed.
 
 (* dynamic Function(void Function(void)) f = func<Object Function(dynamic), dynamic>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun2_dynamic_Object dt_fun2_void_void).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H5. inversion H9. inversion H12.
-    inversion H15. inversion H18.
+  intro H. inversion H. inversion H5.
+  inversion H9. inversion H12. inversion H15.
 Qed.
 
 (* dynamic Function(void Function(void)) f = func<dynamic Function(Object), dynamic>; // Yes *)
@@ -149,10 +135,8 @@ Qed.
 
 (* dynamic Function(void Function(void)) f = func<Object Function(Object), dynamic>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun2_Object_Object dt_fun2_void_void).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H5. inversion H9. inversion H12.
-    inversion H15. inversion H18.
+  intro H. inversion H. inversion H5. 
+  inversion H9. inversion H12. inversion H15.
 Qed.
 
 (* dynamic Function(dynamic Function(dynamic)) f = func<void Function(void), dynamic>; // Yes *)
@@ -185,18 +169,14 @@ Qed.
 
 (* dynamic Function(Object Function(Object)) f = func<void Function(void), dynamic>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun2_void_void dt_fun2_Object_Object).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H5. inversion H9. inversion H12.
-    inversion H17. inversion H21. inversion H24. 
+  intro H. inversion H. inversion H5. 
+  inversion H9. inversion H17. inversion H21.
 Qed.
 
 (* dynamic Function(Object Function(Object)) f = func<dynamic Function(void), dynamic>; // No *)
 Goal ~(TypeVoidnessPreserves dt_fun2_void_dynamic dt_fun2_Object_Object).
-  intro H. inversion H.
-  - inversion H0.
-  - inversion H5. inversion H9. inversion H12.
-    inversion H17. inversion H21. inversion H24.
+  intro H. inversion H. inversion H5.
+  inversion H9. inversion H17. inversion H21.
 Qed.
 
 (* dynamic Function(Object Function(Object)) f = func<void Function(dynamic), dynamic>; // Yes *)

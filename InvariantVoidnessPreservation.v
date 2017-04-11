@@ -3,20 +3,25 @@
  * BSD-style license that can be found in the LICENSE file. *)
 
 Require Import Utf8.
-Require Import Types.
-Require Import Voidness.
 Require Import List.
-Require Export Types.
-Require Export Voidness.
+Require Import Types.
+Require Import Dynamics.
 
-Module VoidnessPreservationBase (Import MyVoidness : VoidnessSig).
+Require Export Types.
+Require Export Dynamics.
+
+Module VoidnessPreservationBase (MyDynamics : DynamicsSig).
 
   Inductive VoidnessPreserves : DartType -> DartType -> Prop :=
   | vp_0_any : ∀ dt,
     VoidnessPreserves dt_dynamic dt
-  | vp_any_1 : ∀ dt1 dt2,
-    annotationVoidness dt2 = vt_1 ->
-    VoidnessPreserves dt1 dt2
+  | vp_any_void : ∀ dt,
+    VoidnessPreserves dt dt_void
+  | vp_any_variable : ∀ dt n,
+    VoidnessPreserves dt (dt_variable n)
+  | vp_any_dynamic : ∀ dt,
+    MyDynamics.dynamic_is_magic ->
+    VoidnessPreserves dt dt_dynamic
   | vp_class : ∀ dtypes1 dtypes2,
     VoidnessClassTypesPreserve dtypes1 dtypes2 ->
     VoidnessPreserves (dt_class dtypes1) (dt_class dtypes2)
@@ -79,93 +84,3 @@ Module VoidnessPreservationBase (Import MyVoidness : VoidnessSig).
   Hint Unfold TypeVoidnessPreserves.
 
 End VoidnessPreservationBase.
-
-(* In VoidnessPreserves above, we have replaced a couple of requirements by
- * equivalent ones; the sections below check that they are indeed equivalent *)
-
-Module StrictVoidnessPreservation := VoidnessPreservationBase Voidness.StrictVoidness.
-Module NormalVoidnessPreservation := VoidnessPreservationBase Voidness.NormalVoidness.
-
-Module Type CheckSig (MyVoidness : VoidnessSig).
-
-  Parameter voidness0IsDynamic :
-    forall dt, MyVoidness.voidness dt = vt_0 ->
-               (dt = dt_dynamic \/ dt = dt_bottom).
-  Parameter annotationVoidness0IsDynamic :
-    forall dt, MyVoidness.annotationVoidness dt = vt_0 ->
-               (dt = dt_dynamic \/ dt = dt_bottom).
-  Parameter annotationVoidness1IsVoidOrVar :
-    forall dt, MyVoidness.annotationVoidness dt = vt_1 ->
-               (dt = dt_dynamic \/ dt = dt_void \/ exists n, dt = dt_variable n).
-
-End CheckSig.
-
-Module CheckStrict <: CheckSig StrictVoidness.
-
-  Import StrictVoidness.
-
-  Lemma voidness0IsDynamic :
-    forall dt, voidness dt = vt_0 -> (dt = dt_dynamic \/ dt = dt_bottom).
-  Proof.
-    intro dt; destruct dt; intro H; auto; inversion H.
-  Qed.
-
-  Lemma annotationVoidness0IsDynamic :
-    forall dt, annotationVoidness dt = vt_0 -> (dt = dt_dynamic \/ dt = dt_bottom).
-  Proof.
-    intro dt; destruct dt; intro H; auto; inversion H.
-  Qed.
-
-  Lemma annotationVoidness1IsVoidOrVarAux :
-    forall dt, annotationVoidness dt = vt_1 ->
-               (dt = dt_void \/ exists n, dt = dt_variable n).
-  Proof.
-    intro dt; destruct dt; intro H; auto;
-      inversion H; try inversion H0; try inversion H1.
-    right. exists n. reflexivity.
-  Qed.
-
-  Lemma annotationVoidness1IsVoidOrVar :
-    forall dt, annotationVoidness dt = vt_1 ->
-               (dt = dt_dynamic \/ dt = dt_void \/ exists n, dt = dt_variable n).
-  Proof.
-    intro dt; destruct dt; intro H; auto;
-      inversion H; try inversion H0; try inversion H1.
-    right. apply annotationVoidness1IsVoidOrVarAux. assumption.
-  Qed.
-
-  Eval cbv in annotationVoidness dt_dynamic. (* vt_0 *)
-  Eval cbv in annotationVoidness dt_void. (* vt_1 *)
-  Eval cbv in annotationVoidness (dt_variable A). (* vt_1 *)
-
-End CheckStrict.
-
-Module CheckNormal : CheckSig NormalVoidness.
-
-  Import NormalVoidness.
-
-  Lemma voidness0IsDynamic :
-    forall dt, voidness dt = vt_0 -> (dt = dt_dynamic \/ dt = dt_bottom).
-  Proof.
-    intro dt; destruct dt; intro H; auto; inversion H.
-  Qed.
-
-  Lemma annotationVoidness0IsDynamic :
-    forall dt, annotationVoidness dt = vt_0 -> (dt = dt_dynamic \/ dt = dt_bottom).
-  Proof.
-    intro dt; destruct dt; intro H; auto; inversion H.
-  Qed.
-
-  Lemma annotationVoidness1IsVoidOrVar :
-    forall dt, annotationVoidness dt = vt_1 ->
-               (dt = dt_dynamic \/ dt = dt_void \/ exists n, dt = dt_variable n).
-  Proof.
-    intro dt; destruct dt; intro H; auto; inversion H.
-    - right. right. exists n. reflexivity.
-  Qed.
-
-  Eval cbv in annotationVoidness dt_dynamic. (* vt_1 *)
-  Eval cbv in annotationVoidness dt_void. (* vt_1 *)
-  Eval cbv in annotationVoidness (dt_variable A). (* vt_1 *)
-
-End CheckNormal.

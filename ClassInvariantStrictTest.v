@@ -6,43 +6,32 @@ Require Import Utf8.
 Require Import List.
 Require Import ClassTestTypes.
 Require Import InvariantVoidnessPreservation.
-Require Import NotVoidAssignability.
 
 Module MyVoidnessPreservation :=
   InvariantVoidnessPreservation.VoidnessPreservationBase
-    Voidness.StrictVoidness.
+    Dynamics.StrictDynamics.
 Import MyVoidnessPreservation.
-
-Ltac unfold_parameters :=
-  unfold StrictVoidnessParameters.voidness_void in *;
-  unfold StrictVoidnessParameters.voidness_dynamic in *;
-  unfold StrictVoidnessParameters.voidness_variable in *;
-  unfold StrictVoidnessParameters.covoidness_void in *;
-  unfold StrictVoidnessParameters.covoidness_dynamic in *;
-  unfold StrictVoidnessParameters.covoidness_variable in *.
 
 (* -------------------- Examples from email threads -------------------- *)
 
 (* A<Object> x = new A<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_A_void dt_A_Object).
-  intro H. inversion H; simpl in *; unfold_parameters.
-  - inversion H0.
+  intro H. inversion H; simpl in *.
   - inversion H2. inversion H5.
     + inversion H8. intuition H14.
     + inversion H8; subst.
-      * inversion H14. inversion H4. inversion H10.
-      * inversion H8. inversion H4. inversion H14. simpl in H17. inversion H17.
-        inversion H3. inversion H10.
+      * inversion H14. inversion H4.
+      * inversion H8. inversion H4. inversion H14. inversion H3. inversion H10.
 Qed.
 
 (* A<dynamic> x = new A<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_A_void dt_A_dynamic).
-  intro H. inversion H; simpl in *; unfold_parameters.
-  - inversion H0.
+  intro H. inversion H; simpl in *.
   - inversion H2. inversion H5. 
-    * inversion H8. intuition H14.
-    * inversion H8. inversion H14. inversion H20. inversion H23. 
-      inversion H13. inversion H17.
+    + inversion H8. intuition H14.
+    + inversion H8. 
+      * inversion H14. inversion H20. exact H23.
+      * inversion H13. inversion H17.      
 Qed.
 
 (* A<Object> x = new A<dynamic>(); // Yes *)
@@ -58,23 +47,21 @@ Qed.
 
 (* A<void> x = new A<dynamic>(); // voidV = dynamicV, No *)
 Goal ~(TypeVoidnessPreserves dt_A_dynamic dt_A_void).
-  intro H. inversion H; simpl in *; unfold_parameters.
-  - inversion H0.
+  intro H. inversion H; simpl in *.
   - inversion H2. inversion H5.
     + inversion H8. intuition H14.
     + inversion H8.
-      * inversion H16. inversion H20. inversion H23. 
+      * inversion H16. inversion H20. exact H23. 
       * inversion H13. inversion H17.
 Qed.
 
 (* A<void> x = new A<Object>(); // voidV = objectV, No *)
 Goal ~(TypeVoidnessPreserves dt_A_Object dt_A_void).
-  intro H. inversion H; simpl in *; unfold_parameters.
-  - inversion H0.
+  intro H. inversion H; simpl in *.
   - inversion H2. inversion H5.
     + inversion H8. intuition H14. 
     + inversion H8. 
-      * inversion H16. inversion H20. inversion H23.
+      * inversion H16. inversion H20.
       * inversion H13. inversion H17.
 Qed.
 
@@ -107,10 +94,8 @@ Goal TypeVoidnessPreserves dt_Iterable_void dt_List_void.
   unfold TypeVoidnessPreserves. simpl.
   - apply vp_class. apply vctsp_cons.
     + apply vctp_some. apply vctps_rest. apply vctps_first.
-      * apply vpp_cons. apply vp_any_1. reflexivity.
-        auto.
-      * apply vpp_cons. apply vp_any_1. reflexivity.
-        auto.
+      * apply vpp_cons. apply vp_any_void. auto.
+      * apply vpp_cons. apply vp_any_void. auto.
     + apply vctsp_cons.
       * apply vctp_some. apply vctps_rest. apply vctps_rest.
         apply vctps_first. auto. auto.
@@ -121,21 +106,20 @@ Qed.
 Goal ~(TypeVoidnessPreserves dt_List_void dt_Iterable_Object).
   unfold TypeVoidnessPreserves.
   intro H. inversion H. 
-  - inversion H0.
   - inversion H2. inversion H7. inversion H10. 
-    * inversion H13. intuition H19.
-    * inversion H13. inversion H19. inversion H25. inversion H28.
-      inversion H18. inversion H22.
+    + inversion H13. intuition H19.
+    + inversion H13. 
+      * inversion H19. inversion H25. 
+      * inversion H18. inversion H22.
 Qed.
 
 (* List<Object> x = new Iterable<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_Iterable_void dt_List_Object).
   unfold TypeVoidnessPreserves.
   intro H. inversion H. 
-  - inversion H0.
   - inversion H2. inversion H5. 
     + inversion H8. inversion H17. intuition H21.
     + inversion H8. inversion H13. 
-      * inversion H18. inversion H24. inversion H27.
+      * inversion H18. inversion H24.
       * inversion H17. inversion H21.
 Qed.

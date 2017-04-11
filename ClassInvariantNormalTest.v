@@ -6,11 +6,10 @@ Require Import Utf8.
 Require Import List.
 Require Import ClassTestTypes.
 Require Import InvariantVoidnessPreservation.
-Require Import NotVoidAssignability.
 
 Module MyVoidnessPreservation :=
   InvariantVoidnessPreservation.VoidnessPreservationBase
-    Voidness.NormalVoidness.
+    Dynamics.NormalDynamics.
 Import MyVoidnessPreservation.
 
 (* -------------------- Examples from email threads -------------------- *)
@@ -18,11 +17,11 @@ Import MyVoidnessPreservation.
 (* A<Object> x = new A<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_A_void dt_A_Object).
   unfold not. intro H. inversion H. 
-  - inversion H0.
   - inversion H2. inversion H5. 
     + inversion H8. intuition H14.
-    + inversion H8. inversion H14. inversion H20. inversion H23.
-      inversion H13. inversion H17.
+    + inversion H8. 
+      * inversion H14. inversion H20.
+      * inversion H13. inversion H17.
 Qed.
 
 (* A<dynamic> x = new A<void>(); // Yes *)
@@ -52,11 +51,10 @@ Qed.
 (* A<void> x = new A<Object>(); // voidV = objectV, No *)
 Goal ~(TypeVoidnessPreserves dt_A_Object dt_A_void).
   intro H. inversion H. 
-  - inversion H0.
   - inversion H2. inversion H5. 
     + inversion H8. intuition H14.
     + inversion H8. 
-      * inversion H16. inversion H20. inversion H23.
+      * inversion H16. inversion H20.
       * inversion H13. inversion H17.
 Qed.
 
@@ -97,20 +95,19 @@ Qed.
 (* Iterable<Object> x = new List<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_List_void dt_Iterable_Object).
   intro H. inversion H. 
-  - inversion H0.
   - inversion H2. inversion H7. inversion H10.
     + inversion H13. intuition H19.
-    + inversion H13. inversion H19. inversion H25. inversion H28.
-      inversion H18. inversion H22.
+    + inversion H13. 
+      * inversion H19. inversion H25.
+      * inversion H18. inversion H22.
 Qed.
 
 (* List<Object> x = new Iterable<void>(); // No *)
 Goal ~(TypeVoidnessPreserves dt_Iterable_void dt_List_Object).
   intro H. inversion H.
-  - inversion H0.
   - inversion H2. inversion H5.
     + inversion H8. inversion H17. intuition H21.
     + inversion H8. inversion H13.
-      * inversion H18. inversion H24. inversion H27.
+      * inversion H18. inversion H24.
       * inversion H17. inversion H21.
 Qed.
