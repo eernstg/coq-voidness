@@ -3,7 +3,6 @@
  * BSD-style license that can be found in the LICENSE file. *)
 
 Require Import Utf8.
-Require Import List.
 Require Import ClassTestTypes.
 Require Import NotVoidAssignability.
 

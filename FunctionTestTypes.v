@@ -4,7 +4,6 @@
 
 Require Import Utf8.
 Require Import Types.
-Require Import List.
 
 (* Object *)
 Definition ct_Object : NameDartTypes := ndts_cons (Object, dts_nil) ndts_nil.

@@ -4,7 +4,6 @@
 
 Require Import Utf8.
 Require Import Types.
-Require Import List.
 Require Export Types.
 
 Inductive DartSubtype : DartType -> DartType -> Prop :=

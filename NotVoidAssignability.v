@@ -5,7 +5,6 @@
 Require Import Utf8.
 Require Import Types.
 Require Import Subtypes.
-Require Import List.
 Require Export Types.
 Require Export Subtypes.
 

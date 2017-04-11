@@ -4,7 +4,6 @@
 
 Require Import Utf8.
 Require Import Types.
-Require Import List.
 
 Module Type DynamicsSig.
   Parameter dynamic_is_magic : Prop.

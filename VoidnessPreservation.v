@@ -3,15 +3,11 @@
  * BSD-style license that can be found in the LICENSE file. *)
 
 Require Import Utf8.
-Require Import List.
 Require Import Types.
 Require Import Dynamics.
 
 Require Export Types.
 Require Export Dynamics.
-
-(* In VoidnessPreserves above, we have replaced a couple of requirements by
- * equivalent ones; the sections below check that they are indeed equivalent *)
 
 Module VoidnessPreservationBase (Import MyDynamics : DynamicsSig).
 
