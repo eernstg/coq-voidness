@@ -13,7 +13,7 @@ Require Export Dynamics.
 Module VoidnessPreservationBase (MyDynamics : DynamicsSig).
 
   Inductive VoidnessPreserves : DartType -> DartType -> Prop :=
-  | vp_0_any : ∀ dt,
+  | vp_dynamic_any : ∀ dt,
     VoidnessPreserves dt_dynamic dt
   | vp_any_void : ∀ dt,
     VoidnessPreserves dt dt_void
@@ -25,13 +25,13 @@ Module VoidnessPreservationBase (MyDynamics : DynamicsSig).
   | vp_class : ∀ dtypes1 dtypes2,
     VoidnessClassTypesPreserve dtypes1 dtypes2 ->
     VoidnessPreserves (dt_class dtypes1) (dt_class dtypes2)
-  | vp_class_0 : ∀ dtypes,
+  | vp_class_dynamic : ∀ dtypes,
     VoidnessPreserves (dt_class dtypes) dt_dynamic
   | vp_function : ∀ ret1 ret2 args1 args2,
     VoidnessPreserves ret1 ret2 ->
     VoidnessPreservesPairwise args2 args1 ->
     VoidnessPreserves (dt_function ret1 args1) (dt_function ret2 args2)
-  | vp_function_0 : ∀ ret args,
+  | vp_function_dynamic : ∀ ret args,
     VoidnessPreserves (dt_function ret args) dt_dynamic
 
   with VoidnessPreservesPairwise : list DartType -> list DartType -> Prop :=
@@ -78,9 +78,5 @@ Module VoidnessPreservationBase (MyDynamics : DynamicsSig).
     VoidnessPreserves VoidnessPreservesPairwise
     VoidnessClassTypesPreserve VoidnessClassTypePreserves
     VoidnessClassTypeGone VoidnessClassTypePreservesSome.
-
-  Definition TypeVoidnessPreserves := VoidnessPreserves.
-
-  Hint Unfold TypeVoidnessPreserves.
 
 End VoidnessPreservationBase.

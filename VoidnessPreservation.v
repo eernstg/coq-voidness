@@ -3,37 +3,49 @@
  * BSD-style license that can be found in the LICENSE file. *)
 
 Require Import Utf8.
-Require Import Types.
-Require Import Voidness.
 Require Import List.
+Require Import Types.
+Require Import Dynamics.
+Require Import Voidness.
+
 Require Export Types.
-Require Export Voidness.
+Require Export Dynamics.
 
-Module VoidnessPreservationBase (Import MyVoidness : VoidnessSig).
+(* In VoidnessPreserves above, we have replaced a couple of requirements by
+ * equivalent ones; the sections below check that they are indeed equivalent *)
 
-  Inductive VoidnessPreserves : VoidnessType -> VoidnessType -> Prop :=
-  | vp_0_any : ∀ vt, VoidnessPreserves vt_0 vt
-  | vp_any_1 : ∀ vt, VoidnessPreserves vt vt_1
+Module VoidnessPreservationBase (Import MyDynamics : DynamicsSig).
+
+  Inductive VoidnessPreserves : DartType -> DartType -> Prop :=
+  | vp_dynamic_any : ∀ dt,
+    VoidnessPreserves dt_dynamic dt
+  | vp_any_void : ∀ dt, 
+    VoidnessPreserves dt dt_void
+  | vp_any_variable : ∀ dt n,
+    VoidnessPreserves dt (dt_variable n)
+  | vp_any_dynamic : ∀ dt,
+    MyDynamics.dynamic_is_magic ->
+    VoidnessPreserves dt dt_dynamic
   | vp_class : ∀ ctypes1 ctypes2,
     VoidnessClassTypesPreserve ctypes1 ctypes2 ->
-    VoidnessPreserves (vt_class ctypes1) (vt_class ctypes2)
-  | vp_class_0 : ∀ ctypes,
-    VoidnessPreserves (vt_class ctypes) vt_0
+    VoidnessPreserves (dt_class ctypes1) (dt_class ctypes2)
+  | vp_class_dynamic : ∀ ctypes,
+    VoidnessPreserves (dt_class ctypes) dt_dynamic
   | vp_function : ∀ ret1 ret2 args1 args2,
     VoidnessPreserves ret1 ret2 ->
     VoidnessPreservesPairwise args2 args1 ->
-    VoidnessPreserves (vt_function ret1 args1) (vt_function ret2 args2)
-  | vp_function_0 : ∀ ret args,
-    VoidnessPreserves (vt_function ret args) vt_0
+    VoidnessPreserves (dt_function ret1 args1) (dt_function ret2 args2)
+  | vp_function_dynamic : ∀ ret args,
+    VoidnessPreserves (dt_function ret args) dt_dynamic
 
-  with VoidnessPreservesPairwise : list VoidnessType -> list VoidnessType -> Prop :=
+  with VoidnessPreservesPairwise : list DartType -> list DartType -> Prop :=
   | vpp_nil : VoidnessPreservesPairwise nil nil
-  | vpp_cons : ∀ vt1 vt2 vts1 vts2,
-    VoidnessPreserves vt1 vt2 ->
-    VoidnessPreservesPairwise vts1 vts2 ->
-    VoidnessPreservesPairwise (vt1 :: vts1) (vt2 :: vts2)
+  | vpp_cons : ∀ dt1 dt2 dts1 dts2,
+    VoidnessPreserves dt1 dt2 ->
+    VoidnessPreservesPairwise dts1 dts2 ->
+    VoidnessPreservesPairwise (dt1 :: dts1) (dt2 :: dts2)
 
-  with VoidnessClassTypesPreserve : VoidnessClassTypes -> VoidnessClassTypes -> Prop :=
+  with VoidnessClassTypesPreserve : ClassTypes -> ClassTypes -> Prop :=
   | vctsp_nil : ∀ ctypes,
     VoidnessClassTypesPreserve nil ctypes
   | vctsp_cons : ∀ ctype1 ctypes1 ctypes2,
@@ -41,7 +53,7 @@ Module VoidnessPreservationBase (Import MyVoidness : VoidnessSig).
     VoidnessClassTypesPreserve ctypes1 ctypes2 ->
     VoidnessClassTypesPreserve (ctype1 :: ctypes1) ctypes2
 
-  with VoidnessClassTypePreserves : VoidnessClassType -> VoidnessClassTypes -> Prop :=
+  with VoidnessClassTypePreserves : ClassType -> ClassTypes -> Prop :=
   | vctp_gone : ∀ ctype ctypes,
     VoidnessClassTypeGone ctype ctypes ->
     VoidnessClassTypePreserves ctype ctypes
@@ -49,7 +61,7 @@ Module VoidnessPreservationBase (Import MyVoidness : VoidnessSig).
     VoidnessClassTypePreservesSome ctype ctypes ->
     VoidnessClassTypePreserves ctype ctypes
 
-  with VoidnessClassTypeGone : VoidnessClassType -> VoidnessClassTypes -> Prop :=
+  with VoidnessClassTypeGone : ClassType -> ClassTypes -> Prop :=
   | vctg_nil : ∀ ctype,
     VoidnessClassTypeGone ctype nil
   | vctg_cons : ∀ name1 args1 name2 args2 ctypes,
@@ -57,7 +69,7 @@ Module VoidnessPreservationBase (Import MyVoidness : VoidnessSig).
     VoidnessClassTypeGone (name1, args1) ctypes ->
     VoidnessClassTypeGone (name1, args1) ((name2, args2) :: ctypes)
 
-  with VoidnessClassTypePreservesSome : VoidnessClassType -> VoidnessClassTypes -> Prop :=
+  with VoidnessClassTypePreservesSome : ClassType -> ClassTypes -> Prop :=
   | vctps_first : ∀ name args1 args2 ctypes,
     VoidnessPreservesPairwise args1 args2 ->
     VoidnessClassTypePreservesSome (name, args1) ((name, args2) :: ctypes)
@@ -69,10 +81,5 @@ Module VoidnessPreservationBase (Import MyVoidness : VoidnessSig).
     VoidnessPreserves VoidnessPreservesPairwise
     VoidnessClassTypesPreserve VoidnessClassTypePreserves
     VoidnessClassTypeGone VoidnessClassTypePreservesSome.
-
-  Definition TypeVoidnessPreserves (dt1: DartType) (dt2: DartType) : Prop :=
-    VoidnessPreserves (voidness dt1) (annotationVoidness dt2).
-
-  Hint Unfold TypeVoidnessPreserves.
 
 End VoidnessPreservationBase.

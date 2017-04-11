@@ -8,76 +8,68 @@ Require Import ClassTestTypes.
 Require Import VoidnessPreservation.
 
 (* Works with multiple parameters, with no changes: Uncomment one of them. *)
-Module MyVoidness :=
-  Voidness.NormalVoidness.
-  (* Voidness.PermissiveVoidness. *)
+Module MyDynamics :=
+  Dynamics.NormalDynamics.
 
 Module MyVoidnessPreservation :=
-  VoidnessPreservation.VoidnessPreservationBase MyVoidness.
+  VoidnessPreservation.VoidnessPreservationBase MyDynamics.
 Import MyVoidnessPreservation.
 
 (* ---------- Voidness Types ---------- *)
 
-(* Object *)
-Definition cvt_Object : VoidnessClassTypes := (Object, nil) :: nil.
-Definition vt_Object := vt_class cvt_Object.
-
-(* A<Object> *)
-Definition cvt_A_Object := (A, vt_Object :: nil) :: cvt_Object.
-Definition vt_A_Object := vt_class cvt_A_Object.
-
-(* A<1> *)
-Definition cvt_A_1 := (A, vt_1 :: nil) :: cvt_Object.
-Definition vt_A_1 := vt_class cvt_A_1.
-
-(* A<A<1>> *)
-Definition cvt_A_A_1 := (A, vt_A_1 :: nil) :: cvt_Object.
-Definition vt_A_A_1 := vt_class cvt_A_A_1.
-
 (* B<A<1>, Object> *)
-Definition cvt_B_A1_Object := (B, vt_A_1 :: vt_Object :: nil) :: cvt_Object.
-Definition vt_B_A1_Object := vt_class cvt_B_A1_Object.
+Definition ct_B_A1_Object := (B, dt_A_void :: dt_Object :: nil) :: ct_Object.
+Definition dt_B_A1_Object := dt_class ct_B_A1_Object.
 
 (* B<Object, Object> *)
-Definition cvt_B_ObjectObject := (B, vt_Object :: vt_Object :: nil) :: cvt_Object.
-Definition vt_B_ObjectObject := vt_class cvt_B_ObjectObject.
+Definition ct_B_ObjectObject := (B, dt_Object :: dt_Object :: nil) :: ct_Object.
+Definition dt_B_ObjectObject := dt_class ct_B_ObjectObject.
+
+(* A<A<void>> *)
+Definition ct_A_A_void := (A, dt_A_void :: nil) :: ct_Object.
+Definition dt_A_A_void := dt_class ct_A_A_void.
 
 Hint Unfold
   ct_Object dt_Object ct_A_Object dt_A_Object ct_A_void dt_A_void
   ct_A_dynamic dt_A_dynamic ct_Iterable_Object dt_Iterable_Object
   ct_Iterable_void dt_Iterable_void ct_List_Object dt_List_Object
-  ct_List_void dt_List_void cvt_Object vt_Object cvt_A_Object
-  vt_A_Object cvt_A_1 vt_A_1 cvt_A_A_1 vt_A_A_1 cvt_B_A1_Object
-  vt_B_A1_Object cvt_B_ObjectObject vt_B_ObjectObject.
+  ct_List_void dt_List_void ct_A_A_void dt_A_A_void
+  ct_B_A1_Object dt_B_A1_Object ct_B_ObjectObject dt_B_ObjectObject.
 
 (* ---------- Trying out existing examples ---------- *)
 
-(* 0 <:: 0 *)
-Goal VoidnessPreserves vt_0 vt_0.
+(* dynamic <:: dynamic *)
+Goal VoidnessPreserves dt_dynamic dt_dynamic.
  auto.
 Qed.
 
-(* 0 <:: 1 *)
-Goal VoidnessPreserves vt_0 vt_1.
+(* dynamic <:: void *)
+Goal VoidnessPreserves dt_dynamic dt_void.
   auto.
 Qed.
 
-(* A<Object> <:: A<1> *)
-Goal VoidnessPreserves vt_A_Object vt_A_1.
+(* dynamic <:: variable n *)
+Goal forall n, VoidnessPreserves dt_dynamic (dt_variable n).
+  auto.
+Qed.
+
+(* A<Object> <:: A<void> *)
+Goal VoidnessPreserves dt_A_Object dt_A_void.
   apply vp_class; apply vctsp_cons.
     apply vctp_some; apply vctps_first; auto.
   apply vctsp_cons; auto.
   apply vctp_some. apply vctps_rest. apply vctps_first. auto.
 Qed.
 
-(* A<A<1>> <:: A<1> *)
-Goal VoidnessPreserves vt_A_A_1 vt_A_1.
+(* A<A<void>> <:: A<void> *)
+Goal VoidnessPreserves dt_A_A_void dt_A_void.
   apply vp_class; apply vctsp_cons; auto.
     apply vctp_some. apply vctps_first. apply vpp_cons; auto.
   apply vctsp_cons; auto. apply vctp_some. apply vctps_rest. apply vctps_first. auto.
 Qed.
 
-Goal ~(VoidnessPreserves vt_A_1 vt_A_Object).
+(* Not A<void> <:: A<Object> *)
+Goal ~(VoidnessPreserves dt_A_void dt_A_Object).
   unfold not. intro H. inversion H. inversion H2. inversion H5.
     inversion H8. apply H14. reflexivity.
   inversion H8.

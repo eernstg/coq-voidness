@@ -15,7 +15,7 @@ Import MyVoidnessPreservation.
 (* -------------------- Examples from email threads -------------------- *)
 
 (* A<Object> x = new A<void>(); // No *)
-Goal ~(TypeVoidnessPreserves dt_A_void dt_A_Object).
+Goal ~(VoidnessPreserves dt_A_void dt_A_Object).
   unfold not. intro H. inversion H. 
   - inversion H2. inversion H5. 
     + inversion H8. intuition H14.
@@ -25,7 +25,7 @@ Goal ~(TypeVoidnessPreserves dt_A_void dt_A_Object).
 Qed.
 
 (* A<dynamic> x = new A<void>(); // Yes *)
-Goal TypeVoidnessPreserves dt_A_void dt_A_dynamic.
+Goal VoidnessPreserves dt_A_void dt_A_dynamic.
   apply vp_class. apply vctsp_cons.
   - apply vctp_some; apply vctps_first; auto.
   - apply vctsp_cons; auto.
@@ -33,7 +33,7 @@ Goal TypeVoidnessPreserves dt_A_void dt_A_dynamic.
 Qed.
 
 (* A<Object> x = new A<dynamic>(); // Yes *)
-Goal TypeVoidnessPreserves dt_A_dynamic dt_A_Object.
+Goal VoidnessPreserves dt_A_dynamic dt_A_Object.
   apply vp_class. apply vctsp_cons.
   - apply vctp_some; apply vctps_first; auto.
   - apply vctsp_cons; auto.
@@ -41,7 +41,7 @@ Goal TypeVoidnessPreserves dt_A_dynamic dt_A_Object.
 Qed.
 
 (* A<void> x = new A<dynamic>(); // voidV = dynamicV, Yes *)
-Goal TypeVoidnessPreserves dt_A_dynamic dt_A_void.
+Goal VoidnessPreserves dt_A_dynamic dt_A_void.
   apply vp_class. apply vctsp_cons.
   - apply vctp_some. apply vctps_first; auto.
   - apply vctsp_cons; auto.
@@ -49,7 +49,7 @@ Goal TypeVoidnessPreserves dt_A_dynamic dt_A_void.
 Qed.
 
 (* A<void> x = new A<Object>(); // voidV = objectV, No *)
-Goal ~(TypeVoidnessPreserves dt_A_Object dt_A_void).
+Goal ~(VoidnessPreserves dt_A_Object dt_A_void).
   intro H. inversion H. 
   - inversion H2. inversion H5. 
     + inversion H8. intuition H14.
@@ -59,12 +59,12 @@ Goal ~(TypeVoidnessPreserves dt_A_Object dt_A_void).
 Qed.
 
 (* dynamic x = new A<void>(); // Yes *)
-Goal TypeVoidnessPreserves dt_A_void dt_dynamic.
+Goal VoidnessPreserves dt_A_void dt_dynamic.
   auto.
 Qed.
 
 (* Object x = new A<void>(); // Yes *)
-Goal TypeVoidnessPreserves dt_A_void dt_Object.
+Goal VoidnessPreserves dt_A_void dt_Object.
   apply vp_class. apply vctsp_cons.
   - apply vctp_gone. apply vctg_cons. discriminate. apply vctg_nil.
   - apply vctsp_cons; auto.
@@ -72,7 +72,7 @@ Goal TypeVoidnessPreserves dt_A_void dt_Object.
 Qed.
 
 (* Iterable<void> x = new List<void>(); // Yes *)
-Goal TypeVoidnessPreserves dt_List_void dt_Iterable_void.
+Goal VoidnessPreserves dt_List_void dt_Iterable_void.
   apply vp_class. apply vctsp_cons.
   - apply vctp_gone; apply vctg_cons. discriminate.
     apply vctg_cons. discriminate.
@@ -84,7 +84,7 @@ Goal TypeVoidnessPreserves dt_List_void dt_Iterable_void.
 Qed.
 
 (* List<void> x = new Iterable<void>(); // Yes *)
-Goal TypeVoidnessPreserves dt_Iterable_void dt_List_void.
+Goal VoidnessPreserves dt_Iterable_void dt_List_void.
   apply vp_class. apply vctsp_cons.
   - apply vctp_some. apply vctps_rest. apply vctps_first; auto.
   - apply vctsp_cons; auto.
@@ -93,7 +93,7 @@ Goal TypeVoidnessPreserves dt_Iterable_void dt_List_void.
 Qed.
 
 (* Iterable<Object> x = new List<void>(); // No *)
-Goal ~(TypeVoidnessPreserves dt_List_void dt_Iterable_Object).
+Goal ~(VoidnessPreserves dt_List_void dt_Iterable_Object).
   intro H. inversion H. 
   - inversion H2. inversion H7. inversion H10.
     + inversion H13. intuition H19.
@@ -103,7 +103,7 @@ Goal ~(TypeVoidnessPreserves dt_List_void dt_Iterable_Object).
 Qed.
 
 (* List<Object> x = new Iterable<void>(); // No *)
-Goal ~(TypeVoidnessPreserves dt_Iterable_void dt_List_Object).
+Goal ~(VoidnessPreserves dt_Iterable_void dt_List_Object).
   intro H. inversion H.
   - inversion H2. inversion H5.
     + inversion H8. inversion H17. intuition H21.
