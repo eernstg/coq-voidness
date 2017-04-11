@@ -6,7 +6,7 @@ Require Import Utf8.
 Require Import Coq.Program.Basics.
 Require Import List.
 
-Inductive Name : Set := Object | A | B | Iterable | List.
+Inductive Name : Set := Object | A | B | N | C1 | T | Iterable | List.
 
 Inductive DartType : Set :=
 | dt_void : DartType
