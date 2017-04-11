@@ -18,13 +18,3 @@ Inductive DartType : Set :=
 
 Definition ClassType : Type := (Name * (list DartType))%type.
 Definition ClassTypes : Type := list ClassType.
-
-Inductive VoidnessType : Set :=
-| vt_0 : VoidnessType
-| vt_1 : VoidnessType
-| vt_class : list (Name * list VoidnessType) -> VoidnessType
-| vt_function : VoidnessType -> list VoidnessType -> VoidnessType
-| vt_bottom : VoidnessType.
-
-Definition VoidnessClassType : Type := (Name * list VoidnessType)%type.
-Definition VoidnessClassTypes : Type := list VoidnessClassType.
