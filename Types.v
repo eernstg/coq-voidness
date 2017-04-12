@@ -23,7 +23,7 @@ with DartTypes : Set :=
 
 with NameDartTypes : Set :=
 | ndts_nil : NameDartTypes
-| ndts_cons : (Name * DartTypes) -> NameDartTypes -> NameDartTypes.
+| ndts_cons : Name -> DartTypes -> NameDartTypes -> NameDartTypes.
 
 Scheme DartType_ind := Induction for DartType Sort Prop
   with DartTypes_ind := Induction for DartTypes Sort Prop
